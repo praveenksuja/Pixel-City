@@ -13,6 +13,8 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
    // Outlets
 
     @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var pullUpViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var pullUpView: UIView!
     
     var locationManager = CLLocationManager()
     let authorizationStatus = CLLocationManager.authorizationStatus()
@@ -24,6 +26,13 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         locationManager.delegate = self
         configureLocationServices()
         addDoubleTap()
+    }
+    
+    func animateViewUp () {
+        pullUpViewHeightConstraint.constant = 300
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -58,6 +67,7 @@ extension MapVC: MKMapViewDelegate {
     
     @objc func dropPin (sender: UITapGestureRecognizer) {
         removePin()
+        animateViewUp()
         let touchPoint = sender.location(in: mapView)
         let touchCordinate = mapView.convert(touchPoint, toCoordinateFrom: mapView)
         
@@ -68,6 +78,7 @@ extension MapVC: MKMapViewDelegate {
         let coordinateRegion = MKCoordinateRegionMakeWithDistance(touchCordinate, regionRadius*2.0, regionRadius*2.0)
         
         mapView.setRegion(coordinateRegion, animated: true)
+        
     }
     
     func removePin () {
